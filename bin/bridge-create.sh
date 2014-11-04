@@ -22,13 +22,16 @@ fi
 /bin/mv /etc/sysconfig/network-scripts/ifcfg-${PHYSICAL_INTERFACE} /etc/sysconfig/network-scripts/ifcfg-${BRIDGE_NAME}
 
 # unset HWADDR key if exists
-/bin/sed -i s/^HWADDR=.*// /etc/sysconfig/network-scripts/ifcfg-${BRIDGE_NAME}
+/bin/sed -i "/^HWADDR/d" /etc/sysconfig/network-scripts/ifcfg-${BRIDGE_NAME}
 
 # unset UUID key if exists
-/bin/sed -i s/^UUID=.*// /etc/sysconfig/network-scripts/ifcfg-${BRIDGE_NAME}
+/bin/sed -i "/^UUID=/d" /etc/sysconfig/network-scripts/ifcfg-${BRIDGE_NAME}
 
 # set bridge name
-/bin/sed -i s/^DEVICE=.*/DEVICE=${BRIDGE_NAME}/ /etc/sysconfig/network-scripts/ifcfg-${BRIDGE_NAME}
+## Case 1 - When ifcfg-<device> has DEVICE=<device_name>
+/bin/sed -i "s/^DEVICE=.*/DEVICE=${BRIDGE_NAME}/" /etc/sysconfig/network-scripts/ifcfg-${BRIDGE_NAME}
+## Case 2 - ifcfg-<device> name maybe labeled as NAME=<device_name
+/bin/sed -i "s/^NAME=.*/DEVICE=${BRIDGE_NAME}/" /etc/sysconfig/network-scripts/ifcfg-${BRIDGE_NAME}
 
 # set bridge type
 /bin/sed -i s/^TYPE=.*/TYPE=OVSBridge/ /etc/sysconfig/network-scripts/ifcfg-${BRIDGE_NAME}
